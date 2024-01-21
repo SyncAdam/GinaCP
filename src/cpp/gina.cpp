@@ -135,8 +135,8 @@ int main()
     //------------------------------
 
 
-    Shader ginaShader("./src/cpp/shader.vs", "./src/cpp/shader.fs");
-    Shader lightShader("./src/cpp/shader.vs", "./src/cpp/lightshader.fs");
+    Shader ginaShader("./shader.vs", "./shader.fs");
+    Shader lightShader("./shader.vs", "./lightshader.fs");
 
 	//generate vertex buffer object for storing vertex data in gpu memory, vertex array object and element array object
 	glGenVertexArrays(1, &VAO);

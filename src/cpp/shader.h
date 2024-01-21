@@ -7,14 +7,14 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <filesystem>
 
-#include <glm/glm/glm.hpp>
-#include <glm/glm/vec3.hpp> // glm::vec3
-#include <glm/glm/vec4.hpp> // glm::vec4
-#include <glm/glm/mat4x4.hpp> // glm::mat4
-#include <glm/glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
-#include <glm/glm/gtc/type_ptr.hpp>
-  
+#include <glm/glm.hpp>
+#include <glm/vec3.hpp> // glm::vec3
+#include <glm/vec4.hpp> // glm::vec4
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
+#include <glm/gtc/type_ptr.hpp>
 
 class Shader
 {
@@ -31,6 +31,14 @@ public:
         std::ifstream fragmentShaderFile;
 
         try{
+
+            std::filesystem::path currentPath = std::filesystem::current_path();
+
+            // Convert the path to a string and print it
+            std::cout << "Current Working Directory: " << currentPath.string() << std::endl;
+
+            std::cout << "Opening ifstream for vertex shader from: " << vertexSourcePath << std::endl;
+            std::cout << "Opening ifstream for fragment shader from: " << fragmentSourcePath << std::endl;
 
             vertexShaderFile.open(vertexSourcePath);
             fragmentShaderFile.open(fragmentSourcePath);
@@ -49,12 +57,11 @@ public:
 
         catch(std::ifstream::failure e)
         {
-            std::cout << "ERROR: SHADER FILE NOT SUCCESFULLY READ" << std::endl;
+            std::cout << "ERROR: SHADER FILES NOT SUCCESFULLY READ" << std::endl;
         }
 
         const char* vertexShaderCode = vertexShaderSource.c_str();
         const char* fragmentShaderCode = fragmentShaderSource.c_str();
-
 
         unsigned int vertexShader, fragmentShader;
         int success;
