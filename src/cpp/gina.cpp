@@ -69,7 +69,6 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
 };
 
-
 glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, -1.0f);
 //cameraDirection actually points towards the camera
@@ -93,9 +92,7 @@ int main()
 	unsigned int VAO;  //vertex array object
     unsigned int lightVAO;
 
-
     //------------------------------
-
 
     //glfw initialization and configuration
     glfwInit();
@@ -138,8 +135,8 @@ int main()
     //------------------------------
 
 
-    Shader ginaShader("./src/shader.vs", "./src/shader.fs");
-    Shader lightShader("./src/shader.vs", "./src/lightshader.fs");
+    Shader ginaShader("./src/cpp/shader.vs", "./src/cpp/shader.fs");
+    Shader lightShader("./src/cpp/shader.vs", "./src/cpp/lightshader.fs");
 
 	//generate vertex buffer object for storing vertex data in gpu memory, vertex array object and element array object
 	glGenVertexArrays(1, &VAO);
