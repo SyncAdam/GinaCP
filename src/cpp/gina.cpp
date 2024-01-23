@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp> // glm::vec3
 #include <glm/vec4.hpp> // glm::vec4
+
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
@@ -88,8 +89,9 @@ float cameraFOV = 45.0f;
 int main()
 {
 
-	unsigned int VBO;  //vertex buffer object
-	unsigned int VAO;  //vertex array object
+	unsigned int VBO;   //vertex buffer object to send large chucks of data to the gpu at once
+	unsigned int VAO;   //vertex array object so that vertex attrib pointers have to be configured only once. 
+                        //whenever drawing an object, we can just bind the corresponding VAO
     unsigned int lightVAO;
 
     //------------------------------
@@ -124,7 +126,7 @@ int main()
         return -1;
     }
 
-
+    //GLFW_CURSOR_DISABLED, GLFW_CURSOR_HIDDEN, GLFW_CURSOR_NORMAL
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback); 
@@ -149,6 +151,15 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO); //bind buffer to gl array buffer target
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	
+
+    /*
+        (GLuint index,
+        GLint size,
+        GLenum type,
+        GLboolean normalized,
+        GLsizei stride,
+        const void * pointer)
+    */
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
@@ -168,7 +179,7 @@ int main()
 
 	//wireframe mode gl_line/gl-fill
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);                        //prevent triangles rendering in the front of others when theyre not supposed to.
 
     ginaShader.use();
     ginaShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
@@ -179,7 +190,7 @@ int main()
     //------------------------------
 
         glm::mat4 projection;
-        projection = glm::perspective(glm::radians(cameraFOV), 800.0f / 600.0f, 0.1f, 100.0f);
+        projection = glm::perspective(glm::radians(cameraFOV), 800.0f / 600.0f, 0.1f, 100.0f);  //create a large frustum that defines the visible space
         ginaShader.setMat4("projection", projection);
 
     //------------------------------
@@ -194,7 +205,7 @@ int main()
     {
 
         deltaT = glfwGetTime() - lastFrame;
-        std::cout << 1/deltaT << std::endl;
+        //std::cout << 1/deltaT << std::endl;
         lastFrame = glfwGetTime();
 
         processInput(window, deltaT);
@@ -204,42 +215,38 @@ int main()
 
         ginaShader.use();
 
-        lightPosition = glm::vec3(2*sin((float)glfwGetTime()), 2*cos((float)glfwGetTime()), 1.0f);
+        lightPosition = glm::vec3(5*sin((float)glfwGetTime()), 5*cos((float)glfwGetTime()), 1.0f);
 
-        ginaShader.setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-        ginaShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+
         ginaShader.setVec3("lightPos", lightPosition);
+        ginaShader.setVec3("viewPos", cameraPosition);
 
         //cameraDirection actually points towards the camera
         cameraDirection = glm::normalize(cameraPosition - cameraTarget);
         cameraRight = glm::normalize(glm::cross(glm::vec3(0.0f, 1.0f, 0.0f), cameraDirection));
         cameraUp = glm::cross(cameraDirection, cameraRight);
 
-        glm::mat4 model = glm::mat4(1.0f);
-        glm::mat4 view = glm::mat4(1.0f);
-
         projection = glm::perspective(glm::radians(cameraFOV), 800.0f / 600.0f, 0.1f, 100.0f);
         ginaShader.setMat4("projection", projection);
 
         view = glm::lookAt(cameraPosition, cameraPosition + cameraTarget, glm::vec3(0.0f, 1.0f, 0.0f));
-
-        //float angle = (1) * 10 * (float)glfwGetTime(); 
-        //model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 1.0f, 1.0f));
 
         ginaShader.setMat4("model", model);
         ginaShader.setMat4("view", view);
 
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-
       
         lightShader.use();
         lightShader.setMat4("projection", projection);
         lightShader.setMat4("view", view);
 
         glm::mat4 light = glm::mat4(1.0f);
-        light = glm::translate(light, lightPosition);
         light = glm::scale(light, glm::vec3(0.3f));
+
+        light = glm::translate(light, lightPosition);
         lightShader.setMat4("model", light);
         lightShader.setVec3("lightPos", lightPosition);
 

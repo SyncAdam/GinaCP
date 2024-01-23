@@ -10,10 +10,25 @@ Many thanks to the creator of [learnopengl](https://www.learnopengl.com) for all
 
 **After compilation put shader source files into the same directory as the executable!!!**
 
+Dependencies:
+Windows:
+ - DirectX SDK
+ - CMake
+ - MSBuild / Visual Studio
+ - git
+
+Linux:
+ - CMake
+ - XCursor-dev
+ - Xinerama-dev
+ - git
+
 Current state:
  - Camera movement
  - Basic vertex shader
  - Basic fragment shader
- - Ambient and diffuse lighting
+ - Ambient, diffuse and specular lighting
+
+
 
 ![](cube.gif)
