@@ -249,6 +249,8 @@ int main()
     ginaShader.use();
     ginaShader.setVec3("lightColor", 1.0f, 1.0f, 1.0f);
     ginaShader.setVec3("lightPos", lightPosition);
+    ginaShader.setInt("material.diffuse", 0);
+    ginaShader.setInt("material.specular", 1);
 
     //------------------------------
 
